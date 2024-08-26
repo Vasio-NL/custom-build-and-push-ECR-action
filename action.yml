@@ -52,8 +52,8 @@ runs:
 
     - name: Build and push
       run: |
-        docker build -f ${{ inputs.dockerfile-path }} -t ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-name }}:${{ github.sha }}-${{ github.run_id }} ${{ inputs.docker-build-context }}
-        docker push ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-name }}:${{ github.sha }}-${{ github.run_id }}
+        docker build -f ${{ inputs.dockerfile-path }} -t ${{ steps.login-ecr.outputs.registry }}/${{ inputs.container-repository-name }}/${{ inputs.docker-image-name }}:${{ github.sha }}-${{ github.run_id }} ${{ inputs.docker-build-context }}
+        docker push ${{ steps.login-ecr.outputs.registry }}/${{ inputs.container-repository-name }}/${{ inputs.docker-image-name }}:${{ github.sha }}-${{ github.run_id }}
       shell: bash
 
     - name: Create kubeconfig file
