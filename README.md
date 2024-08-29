@@ -1,4 +1,4 @@
-## Image build and push action
+## Image build and push to Amazon ECR action
 
 This Github Action builds images and pushes them to Amazon Elastic Container Registry.
 It also creates/updates a kubernetes configmap which keeps track of the latest version of the image.
