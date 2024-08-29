@@ -32,7 +32,7 @@ In this example:
 
 ### Example usage
 
-The following is an example release job:
+The following is an example build job:
 
 ```
     build-app:
