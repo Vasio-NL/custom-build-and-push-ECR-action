@@ -1,5 +1,5 @@
 name: 'Build and push action for ECR'
-description: 'Builds and pushes Vasio images to Amazon ECR. Requires AWS credentials to push.'
+description: 'Builds and pushes images to Amazon ECR. Requires AWS credentials to push.'
 inputs:
   aws-access-key-id:
     description: 'AWS Access Key ID used to log in to Amazon ECR'
