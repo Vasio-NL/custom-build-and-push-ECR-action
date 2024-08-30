@@ -13,20 +13,20 @@ This action is intended to be used with the custom [kubernetes deploy ECR action
 | --- |---------------------------------------------------------------------------------| --- |
 | `aws-access-key-id` | AWS Access Key ID used to log in to Amazon ECR                                                  | true |
 | `aws-secret-access-key` | AWS Secret Access Key used to log in to Amazon ECR                                             | true |
-| `container-repository-name` | The name of the container repository                                            | true |
+| `container-registry-name` | The name of the container registry                                            | true |
 | `dockerfile-path` | Path to the Dockerfile                                                          | true |
 | `docker-image-name` | The name of the image                                                           | true |
 | `kube-config-base64` | The base64 encoded kubeconfig needed to connect to the cluster                  | true |
 | `docker-build-context` | The build context for the docker build. The default is the root directory. ('.') | false |
 | `docker-build-args` | Optional additional build arguments for the docker build                        | false |
 
-The container repository name is the name that is prefixed to the image name. An example image:
+The container registry name is the name that is prefixed to the image name. An example image:
 
 `1234567890.dkr.ecr.eu-west-1.amazonaws.com/vasio/cool-project:latest`
 
 In this example:
 - The <b>registry url</b> is `1234567890.dkr.ecr.eu-west-1.amazonaws.com`. In this action, the registry url is retrieved automatically from AWS.
-- The <b>container repository name</b> is `vasio`.
+- The <b>container registry name</b> is `vasio`.
 - The <b>image name</b> is `cool-project`.
 
 
@@ -39,12 +39,15 @@ The following is an example build job:
     runs-on: ubuntu-latest
     environment: ${{github.ref_name}}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Build and push Docker image
         uses: Vasio-NL/custom-build-and-push-ECR-action@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          container-repository-name: vasio
+          container-registry-name: vasio
           docker-image-name: cool-project
           dockerfile-path: './docker/Dockerfile'
           kube-config-base64: ${{ secrets.KUBE_CONFIG_B64 }}
