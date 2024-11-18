@@ -9,8 +9,8 @@ inputs:
     description: 'AWS Secret Access Key used to log in to Amazon ECR'
     required: true
     default: ''
-  container-registry-name:
-    description: 'The name of the container registry (middle part of the image tag)'
+  container-repository-name:
+    description: 'The name of the image repository, e.g. vasio/vasio-website, or just vasio-website'
     required: true
     default: ''
   dockerfile-path:
@@ -24,10 +24,6 @@ inputs:
   docker-build-args:
     description: 'Additional build arguments for the docker build'
     required: false
-    default: ''
-  docker-image-name:
-    description: 'The name of the image'
-    required: true
     default: ''
   kube-config-base64:
     description: 'The base64 encoded kubeconfig needed to connect to the cluster'
@@ -49,8 +45,8 @@ runs:
 
     - name: Build and push
       run: |
-        docker build -f ${{ inputs.dockerfile-path }} -t ${{ steps.login-ecr.outputs.registry }}/${{ inputs.container-registry-name }}/${{ inputs.docker-image-name }}:${{ github.sha }}-${{ github.run_id }} ${{ inputs.docker-build-context }}
-        docker push ${{ steps.login-ecr.outputs.registry }}/${{ inputs.container-registry-name }}/${{ inputs.docker-image-name }}:${{ github.sha }}-${{ github.run_id }}
+        docker build -f ${{ inputs.dockerfile-path }} -t ${{ steps.login-ecr.outputs.registry }}/${{ inputs.container-repository-name }}:${{ github.sha }}-${{ github.run_id }} ${{ inputs.docker-build-context }}
+        docker push ${{ steps.login-ecr.outputs.registry }}/${{ inputs.container-repository-name }}:${{ github.sha }}-${{ github.run_id }}
       shell: bash
 
     - name: Create kubeconfig file
@@ -69,11 +65,11 @@ runs:
 
     - name: Create configMap if not exists
       if: steps.check-configmap.outcome == 'failure'
-      run: kubectl --kubeconfig=kubeconfig.yml create configmap cd-versions --from-literal=${{ inputs.docker-image-name }}=${{ github.sha }}-${{ github.run_id }}
+      run: kubectl --kubeconfig=kubeconfig.yml create configmap cd-versions --from-literal=${{ inputs.container-repository-name }}=${{ github.sha }}-${{ github.run_id }}
       shell: bash
 
     - name: Update existing configmap
       if: steps.check-configmap.outcome == 'success'
       run: |
-        kubectl --kubeconfig=kubeconfig.yml patch cm cd-versions --type json --patch '[{ "op": "replace", "path": "/data/${{ inputs.docker-image-name }}", "value": "${{ github.sha }}-${{ github.run_id }}" }]'
+        kubectl --kubeconfig=kubeconfig.yml patch cm cd-versions --type json --patch '[{ "op": "replace", "path": "/data/${{ inputs.container-repository-name }}", "value": "${{ github.sha }}-${{ github.run_id }}" }]'
       shell: bash
